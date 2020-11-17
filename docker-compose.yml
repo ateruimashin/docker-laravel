@@ -1,14 +1,14 @@
 version: "3.8"
-volumes: 
+volumes:
   php-fpm-socket:
   db-store:
-services: 
+services:
   app:
     build:
       context: .
       dockerfile: ./docker/php/Dockerfile
-    volumes: 
-      - php-fpm-socket:/ver/run/php/fpm
+    volumes:
+      - php-fpm-socket:/var/run/php-fpm
       - ./backend:/work/backend
     environment:
       - DB_CONNECTION=mysql
@@ -17,3 +17,13 @@ services:
       - DB_DATABASE=${DB_NAME:-laravel_local}
       - DB_USERNAME=${DB_USER:-phper}
       - DB_PASSWORD=${DB_PASS:-secret}
+
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - 8080:80
+    volumes:
+      - php-fpm-socket:/var/run/php-fpm
+      - ./backend:/work/backend
